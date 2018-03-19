@@ -45,7 +45,7 @@ contract Marketplace is CryptoCat {
             transferCat(cat, cat.highestBidder);
         }
 
-        emit AuctionEnd(catId);
+        AuctionEnd(catId);
     }
 
     function raiseBid(uint catId) external payable {
