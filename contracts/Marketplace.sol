@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 import "./CryptoCat.sol";
 
@@ -6,23 +6,20 @@ contract Marketplace is CryptoCat {
     event AuctionEnd(uint indexed catId);
 
     function setBreedFee(uint catId, uint fee) public {
-        Cat storage cat = cats[catId];
-        require(cat.owner == msg.sender);
-        cat.breedFee = fee;
+        require(cats[catId].owner == msg.sender);
+        require(cats[catId].isMale == false);
+        femaleCatInfo[catId].breedFee = fee;
     }
 
     function payForBreed(uint ownCatId, uint breedCatId) external payable {
         Cat storage ownCat = cats[ownCatId];
         Cat storage breedCat = cats[breedCatId];
         require(ownCat.owner == msg.sender);
-        require(msg.value >= breedCat.breedFee);
-        require(ownCat.isMale != breedCat.isMale);
+        require(ownCat.isMale && !breedCat.isMale);
+        require(msg.value >= femaleCatInfo[breedCatId].breedFee);
 
         breedCat.owner.transfer(msg.value);
-        if (ownCat.isMale)
-            breed(ownCat, breedCat);
-        else
-            breed(breedCat, ownCat);
+        breed(ownCat, breedCat);
     }
 
     function startAuction(uint catId, uint startingPrice) public {
@@ -60,26 +57,5 @@ contract Marketplace is CryptoCat {
     function drawEther(uint catId) external {
         msg.sender.transfer(auctionDeposits[catId][msg.sender]);
         auctionDeposits[catId][msg.sender] = 0;
-    }
-
-    function getCurrentBid(uint catId) external view returns (uint) {
-        return auctionDeposits[catId][msg.sender];
-    }
-
-    function getCatMarketInfo(uint catId) external view returns (
-        uint breedFee,
-        uint32 lastBreed,
-        bool onAuction,
-        uint highestBid,
-        address highestBidder
-    ) {
-        Cat storage cat = cats[catId];
-        return (
-            cat.breedFee,
-            cat.lastBreed,
-            cat.onAuction,
-            cat.highestBid,
-            cat.highestBidder
-        );
     }
 }

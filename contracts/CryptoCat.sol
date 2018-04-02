@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 import "./Player.sol";
 
@@ -10,41 +10,39 @@ contract CryptoCat is Player {
     function createNewCat(
         address owner,
         bool isMale,
-        uint8 element,
-        uint64 levelCap,
-        uint16 atkPerLv,
-        uint16 defPerLv,
-        uint16 hpPerLv,
-        uint16 baseAtk,
-        uint16 baseDef,
-        uint16 baseHp
+        uint64 levelCap
     ) private
     {
         uint id = cats.length;
-        cats.push(
-            Cat(
-                id,
-                owner,
-                isMale,
-                element,
-                levelCap,
-                atkPerLv,
-                defPerLv,
-                hpPerLv,
-                baseAtk,
-                baseDef,
-                baseHp,
-                1,
-                0,
-                1 finney,
-                0,
-                false,
-                0,
-                0
-            )
+        Cat memory cat = Cat(
+            id,
+            owner,
+            isMale,
+            levelCap,
+            1,
+            0,
+            false,
+            0,
+            0
         );
 
-        receiveCat(cats[id], owner);
+        cats.push(cat);
+        if (cat.isMale) {
+            MaleCat storage maleInfo = maleCatInfo[id];
+            maleInfo.element = 0;
+            maleInfo.atkPerLv = 1;
+            maleInfo.defPerLv = 1;
+            maleInfo.hpPerLv = 1;
+            maleInfo.baseAtk = 1;
+            maleInfo.baseDef = 1;
+            maleInfo.baseHp = 1;
+        } else {
+            FemaleCat storage femaleInfo = femaleCatInfo[id];
+            femaleInfo.breedFee = 1 ether;
+            femaleInfo.lastBreed = uint32(block.timestamp);
+        }
+
+        receiveCat(cat, owner);
     }
 
     function addExp(uint catId, uint64 exp) internal {
@@ -61,8 +59,13 @@ contract CryptoCat is Player {
         }
     }
 
-    function getFreeCat(bool isMale) external adminOnly {
-        createNewCat(msg.sender, isMale, 0, 10, 1, 1, 5, 1, 1, 2);
+    function getFreeCat(bool isMale) private adminOnly {
+        createNewCat(msg.sender, isMale, 10);
+    }
+
+    function getFreeCats(uint num, bool isMale) external adminOnly {
+        for (uint i = 0; i < num; ++i)
+            getFreeCat(isMale);
     }
 
     function feedCat(uint catId) external payable {
@@ -73,39 +76,6 @@ contract CryptoCat is Player {
         require(dad.isMale && !mom.isMale);
 
         // TODO: mix attributes of mom and dad to create child.
-        createNewCat(msg.sender, true, 0, 10, 1, 1, 5, 1, 1, 2);
-    }
-
-    function getCatInfo(uint catId) external view returns (
-        uint id,
-        address owner,
-        bool isMale,
-        uint8 element,
-        uint64 levelCap,
-        uint16 atkPerLv,
-        uint16 defPerLv,
-        uint16 hpPerLv,
-        uint16 baseAtk,
-        uint16 baseDef,
-        uint16 baseHp,
-        uint8 level,
-        uint64 exp
-    ) {
-        Cat storage cat = cats[catId];
-        return (
-            cat.id,
-            cat.owner,
-            cat.isMale,
-            cat.element,
-            cat.levelCap,
-            cat.atkPerLv,
-            cat.defPerLv,
-            cat.hpPerLv,
-            cat.baseAtk,
-            cat.baseDef,
-            cat.baseHp,
-            cat.level,
-            cat.exp
-        );
+        createNewCat(msg.sender, true, 10);
     }
 }

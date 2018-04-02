@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 import "./Admin.sol";
 
@@ -8,29 +8,37 @@ contract Abstract is Admin {
         address owner;
 
         bool isMale;
-        uint8 element;
         uint64 levelCap;
-        uint16 atkPerLv;
-        uint16 defPerLv;
-        uint16 hpPerLv;
-        uint16 baseAtk;
-        uint16 baseDef;
-        uint16 baseHp;
 
         uint8 level;
         uint64 exp;
-
-        uint breedFee;
-        uint32 lastBreed;
 
         bool onAuction;
         uint highestBid;
         address highestBidder;
     }
 
-    uint expPrice = (1 ether) / 1000000;
-    Cat[] cats;
+    struct MaleCat {
+        uint8 element;
+        uint16 atkPerLv;
+        uint16 defPerLv;
+        uint16 hpPerLv;
+        uint16 baseAtk;
+        uint16 baseDef;
+        uint16 baseHp;
+    }
 
-    mapping(address => uint[]) ownedCats;
-    mapping(uint => mapping(address => uint)) auctionDeposits;
+    struct FemaleCat {
+        uint breedFee;
+        uint32 lastBreed;
+    }
+
+    uint expPrice = 1000 wei;
+
+    mapping(uint => MaleCat) public maleCatInfo;
+    mapping(uint => FemaleCat) public femaleCatInfo;
+    Cat[] public cats;
+
+    mapping(address => uint[]) public ownedCats;
+    mapping(uint => mapping(address => uint)) public auctionDeposits;
 }
