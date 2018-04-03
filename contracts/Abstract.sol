@@ -41,4 +41,15 @@ contract Abstract is Admin {
 
     mapping(address => uint[]) public ownedCats;
     mapping(uint => mapping(address => uint)) public auctionDeposits;
+
+    uint randomSeed;
+
+    function nextSeed() private {
+        randomSeed = uint(keccak256(randomSeed + block.timestamp));
+    }
+
+    function getRandom(uint lim) internal returns (uint) {
+        nextSeed();
+        return randomSeed % lim;
+    }
 }

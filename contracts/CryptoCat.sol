@@ -11,7 +11,7 @@ contract CryptoCat is Player {
         address owner,
         bool isMale,
         uint64 levelCap
-    ) private
+    ) private returns (uint)
     {
         uint id = cats.length;
         Cat memory cat = Cat(
@@ -43,6 +43,7 @@ contract CryptoCat is Player {
         }
 
         receiveCat(cat, owner);
+        return id;
     }
 
     function addExp(uint catId, uint64 exp) internal {
@@ -74,8 +75,28 @@ contract CryptoCat is Player {
 
     function breed(Cat dad, Cat mom) internal returns (uint) {
         require(dad.isMale && !mom.isMale);
+        require(mom.level <= dad.level);
 
-        // TODO: mix attributes of mom and dad to create child.
-        createNewCat(msg.sender, true, 10);
+        uint id = createNewCat(msg.sender, true, 10);
+        MaleCat storage dadInfo = maleCatInfo[dad.id];
+
+        uint boost = dad.level - mom.level;
+        if (boost <= 4) boost = 4 - boost; else boost = 0;
+
+        if (cats[id].isMale) {
+            cats[id].levelCap = mom.level;
+            maleCatInfo[id].element = dadInfo.element;
+            maleCatInfo[id].baseAtk = dadInfo.baseAtk + uint16(getRandom(boost));
+            maleCatInfo[id].baseDef = dadInfo.baseDef + uint16(getRandom(boost));
+            maleCatInfo[id].baseHp = dadInfo.baseHp + uint16(getRandom(boost));
+            maleCatInfo[id].atkPerLv = dadInfo.atkPerLv + uint16(getRandom(boost));
+            maleCatInfo[id].defPerLv = dadInfo.defPerLv + uint16(getRandom(boost));
+            maleCatInfo[id].hpPerLv = dadInfo.hpPerLv + uint16(getRandom(boost));
+        } else {
+            cats[id].levelCap = mom.level + uint16(getRandom(boost / 2));
+            if (cats[id].levelCap > 40) cats[id].levelCap = 40;
+        }
+
+        return id;
     }
 }

@@ -16,7 +16,7 @@ contract Marketplace is CryptoCat {
         Cat storage breedCat = cats[breedCatId];
         require(ownCat.owner == msg.sender);
         require(ownCat.isMale && !breedCat.isMale);
-        require(msg.value >= femaleCatInfo[breedCatId].breedFee);
+        require(msg.value >= femaleCatInfo[breedCatId].breedFee || breedCat.owner == msg.sender);
 
         breedCat.owner.transfer(msg.value);
         breed(ownCat, breedCat);
