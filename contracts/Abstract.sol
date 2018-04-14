@@ -8,7 +8,7 @@ contract Abstract is Admin {
         address owner;
 
         bool isMale;
-        uint64 levelCap;
+        uint8 levelCap;
 
         uint8 level;
         uint64 exp;
@@ -30,7 +30,7 @@ contract Abstract is Admin {
 
     struct FemaleCat {
         uint breedFee;
-        uint32 lastBreed;
+        uint lastBreed;
     }
 
     uint expPrice = 1000 wei;
@@ -45,7 +45,7 @@ contract Abstract is Admin {
     uint randomSeed;
 
     function nextSeed() private {
-        randomSeed = uint(keccak256(randomSeed + block.timestamp));
+        randomSeed = uint(keccak256(randomSeed, block.timestamp));
     }
 
     function getRandom(uint lim) internal returns (uint) {

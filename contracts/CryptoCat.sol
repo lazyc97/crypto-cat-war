@@ -9,8 +9,7 @@ contract CryptoCat is Player {
 
     function createNewCat(
         address owner,
-        bool isMale,
-        uint64 levelCap
+        bool isMale
     ) private returns (uint)
     {
         uint id = cats.length;
@@ -18,7 +17,7 @@ contract CryptoCat is Player {
             id,
             owner,
             isMale,
-            levelCap,
+            10,
             1,
             0,
             false,
@@ -39,7 +38,7 @@ contract CryptoCat is Player {
         } else {
             FemaleCat storage femaleInfo = femaleCatInfo[id];
             femaleInfo.breedFee = 1 ether;
-            femaleInfo.lastBreed = uint32(block.timestamp);
+            femaleInfo.lastBreed = block.timestamp;
         }
 
         receiveCat(cat, owner);
@@ -61,7 +60,7 @@ contract CryptoCat is Player {
     }
 
     function getFreeCat(bool isMale) private adminOnly {
-        createNewCat(msg.sender, isMale, 10);
+        createNewCat(msg.sender, isMale);
     }
 
     function getFreeCats(uint num, bool isMale) external adminOnly {
@@ -77,11 +76,11 @@ contract CryptoCat is Player {
         require(dad.isMale && !mom.isMale);
         require(mom.level <= dad.level);
 
-        uint id = createNewCat(msg.sender, true, 10);
+        uint id = createNewCat(msg.sender, getRandom(2) == 1);
         MaleCat storage dadInfo = maleCatInfo[dad.id];
 
         uint boost = dad.level - mom.level;
-        if (boost <= 4) boost = 4 - boost; else boost = 0;
+        if (boost < 4) boost = 4 - boost; else boost = 1;
 
         if (cats[id].isMale) {
             cats[id].levelCap = mom.level;
@@ -93,7 +92,7 @@ contract CryptoCat is Player {
             maleCatInfo[id].defPerLv = dadInfo.defPerLv + uint16(getRandom(boost));
             maleCatInfo[id].hpPerLv = dadInfo.hpPerLv + uint16(getRandom(boost));
         } else {
-            cats[id].levelCap = mom.level + uint16(getRandom(boost / 2));
+            cats[id].levelCap = mom.level + uint8(getRandom(boost / 2));
             if (cats[id].levelCap > 40) cats[id].levelCap = 40;
         }
 
