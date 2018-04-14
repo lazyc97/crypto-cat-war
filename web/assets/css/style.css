@@ -1228,3 +1228,67 @@ input::-ms-input-placeholder {
     width: 100%;
 }
 
+#myselling {
+    margin: auto
+}
+
+#myselling button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+#sell_label {
+    margin-top: 30%;    
+}
+
+#sell_label button {
+    width: 50%;
+    background-color:green;
+    color: white;
+    margin-top: 1em;
+    border: none;
+    cursor: pointer;
+    height: 5em;
+}
+
+
+#usersh ul {
+    text-align: center;
+    background: purple;
+    list-style-type: none;
+    margin-bottom: 20%;
+}
+
+#usersh ul li {
+    color: white;
+    display: inline-table;
+    height: 40px;
+    width: 120px;
+    line-height: 40px;
+    position: relative;
+}
+
+#usersh ul li a { 
+    color: #f1f1f1;
+    text-decoration: none;
+    display: block;
+}
+
+#usersh ul li a:hover {
+    background: #f1f1f1;
+    color: #333;
+}
+
+#usersh ul li > .sub-usersh {
+    display: none;
+    position: absolute;
+}
+
+#usersh ul li:hover .sub-usersh {
+    display: block;
+}
