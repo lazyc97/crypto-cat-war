@@ -1,6 +1,17 @@
 "use strict";
 jQuery(document).ready(function ($) {
 
+    window.wallet = localStorage.getItem('wallet');
+    if (wallet) {
+        wallet = JSON.parse(wallet);
+        var provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
+        provider.getBalance(wallet.address)
+            .then(function (data) {
+                console.log('Balance:', data.toString(), 'wei');
+            });
+    }
+    console.log(wallet);
+
     $(window).load(function () {
         $(".loaded").fadeOut();
         $(".preloader").delay(1000).fadeOut("slow");
@@ -60,7 +71,7 @@ jQuery(document).ready(function ($) {
         autoplayHoverPause: true
 
     });
-    
+
 //fancybox
     $(".youtube-media").on("click", function(e) {
 		var jWindow = $(window).width();

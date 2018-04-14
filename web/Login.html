@@ -39,7 +39,7 @@
         <![endif]-->
         <div class='preloader'><div class='loaded'>&nbsp;</div></div>
         <div class="culmn">
-            <header id="main_menu" class="header navbar-fixed-top">            
+            <header id="main_menu" class="header navbar-fixed-top">
                 <div class="main_menu_bg">
                     <div class="container">
                         <div class="row">
@@ -75,7 +75,7 @@
 
                                     </div>
                                 </nav>
-                            </div>	
+                            </div>
                         </div>
 
                     </div>
@@ -138,28 +138,18 @@
 
                             <div class="main_portfolio_content text-center">
                                 <div class="grid">
-                                    <form action="">
-                                        <div class="col-md-4">
-                                            <p> AVATA </p>
-                                            <img src="assets/images/Meowa.jpg" alt="" />
-                                            <div class="grid_item_overlay all_overlay">
-                                                <a href="assets/images/Meowa.jpg" class="portfolio-img"> <i class="fa fa-picture-o"></i></a>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4" > 
+                                    <div>
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-6" >
                                             <div id="mylogin">
-                                                <label for="#"><b>YOUR KEY</b></label>
-                                                <input type="text" placeholder="ENTER KEY" name="#" required>
-                                                <button type="submit">LOGIN</button>   
-                                                <button type="submit">GENERTATE KEY</button> 
+                                                <label for="#" style="font-size: 2rem"><b>Your Private Key</b></label>
+                                                <input id="private-key-input" type="text" placeholder="ENTER KEY" name="#" required>
+                                                <button id="login-button">LOGIN</button>
+                                                <button id="generate-key-button">GENERTATE KEY</button>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-4">
-                                            <h3> GENERATED CODE</h3>
-                                            <p> 0xFS8DUR32JD8S9FJ3098JFSDJAF983W</p>
-                                        </div>
-                                    </form>
+                                        <div class="col-md-3"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -192,13 +182,13 @@
                                                 <h4>USED</h4>
                                                 <ul>
                                                     <li><a href="">
-                                                            <i class="fa fa-map-marker"></i> 
+                                                            <i class="fa fa-map-marker"></i>
                                                             <span>BLOCKCHAIN <br />
                                                                 HTML_CSS_JS <br />
                                                                 THIS IS CAT WAR</span>
                                                         </a></li>
                                                     <li><a href=""><i class="fa fa-phone"></i> 0123 456 789</a></li>
-                                                </ul> 
+                                                </ul>
                                             </div>
                                         </div>
 
@@ -259,6 +249,7 @@
 
         <script src="assets/js/vendor/jquery-1.11.2.min.js"></script>
         <script src="assets/js/vendor/bootstrap.min.js"></script>
+        <script src="assets/js/vendor/ethers-v2.min.js"></script>
 
         <script src="assets/js/jquery.magnific-popup.js"></script>
         <script src="assets/js/jquery.mixitup.min.js"></script>
@@ -268,5 +259,24 @@
 
         <script src="assets/js/plugins.js"></script>
         <script src="assets/js/main.js"></script>
+
+        <script>
+            $('#login-button').click(function (event) {
+                var privateKey = $('#private-key-input').val();
+                if (privateKey.substr(0, 2) !== '0x') privateKey = '0x' + privateKey;
+
+                var wallet = new ethers.Wallet(privateKey);
+                if (confirm(`Your address is: ${wallet.address}. Correct ?`)) {
+                    window.wallet = wallet;
+                    localStorage.setItem('wallet', JSON.stringify(wallet));
+                    window.location.pathname = '/profile.html';
+                }
+            });
+
+            $('#generate-key-button').click(function (event) {
+                var wallet = ethers.Wallet.createRandom();
+                $('#private-key-input').val(wallet.privateKey);
+            });
+        </script>
     </body>
 </html>
