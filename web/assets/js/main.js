@@ -1,17 +1,23 @@
 "use strict";
+
+// get account from local storage
+var json = localStorage.getItem('wallet');
+if (json) window.globalWallet = JSON.parse(json);
+console.log(window.globalWallet);
+
+// connection to blockchain node
+window.globalProvider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
+
+// init contract
+window.onContractInit = $.getJSON('assets/contracts/CryptoCatWar.json', function (data) {
+    var address = data['networks']['5777']['address'];
+    var abi = data['abi'];
+    window.globalContract = new ethers.Contract(address, abi, globalProvider);
+    console.log(globalContract);
+});
+
+// page ready
 jQuery(document).ready(function ($) {
-
-    window.wallet = localStorage.getItem('wallet');
-    if (wallet) {
-        wallet = JSON.parse(wallet);
-        var provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
-        provider.getBalance(wallet.address)
-            .then(function (data) {
-                console.log('Balance:', data.toString(), 'wei');
-            });
-    }
-    console.log(wallet);
-
     $(window).load(function () {
         $(".loaded").fadeOut();
         $(".preloader").delay(1000).fadeOut("slow");

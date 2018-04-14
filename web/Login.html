@@ -267,9 +267,8 @@
 
                 var wallet = new ethers.Wallet(privateKey);
                 if (confirm(`Your address is: ${wallet.address}. Correct ?`)) {
-                    window.wallet = wallet;
                     localStorage.setItem('wallet', JSON.stringify(wallet));
-                    window.location.pathname = '/profile.html';
+                    window.location.pathname = '/userprofile.html';
                 }
             });
 
