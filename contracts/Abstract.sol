@@ -19,7 +19,14 @@ contract Abstract is Admin {
     }
 
     struct MaleCat {
+        /*
+            element:
+            - 0: fire
+            - 1: water
+            - 2: wind
+        */
         uint8 element;
+
         uint16 atkPerLv;
         uint16 defPerLv;
         uint16 hpPerLv;

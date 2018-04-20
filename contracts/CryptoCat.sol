@@ -74,25 +74,29 @@ contract CryptoCat is Player {
 
     function breed(Cat dad, Cat mom) internal returns (uint) {
         require(dad.isMale && !mom.isMale);
-        require(mom.level <= dad.level);
 
         uint id = createNewCat(msg.sender, getRandom(2) == 1);
         MaleCat storage dadInfo = maleCatInfo[dad.id];
 
         uint boost = dad.level - mom.level;
-        if (boost < 4) boost = 4 - boost; else boost = 1;
+        if (dad.level < mom.level) boost = mom.level - dad.level;
+        if (boost <= 4) boost = 4 - boost; else boost = 1;
 
         if (cats[id].isMale) {
             cats[id].levelCap = mom.level;
             maleCatInfo[id].element = dadInfo.element;
-            maleCatInfo[id].baseAtk = dadInfo.baseAtk + uint16(getRandom(boost));
-            maleCatInfo[id].baseDef = dadInfo.baseDef + uint16(getRandom(boost));
-            maleCatInfo[id].baseHp = dadInfo.baseHp + uint16(getRandom(boost));
+            maleCatInfo[id].baseAtk = dadInfo.baseAtk + uint16(getRandom(boost * 5));
+            maleCatInfo[id].baseDef = dadInfo.baseDef + uint16(getRandom(boost * 5));
+            maleCatInfo[id].baseHp = dadInfo.baseHp + uint16(getRandom(boost * 5));
             maleCatInfo[id].atkPerLv = dadInfo.atkPerLv + uint16(getRandom(boost));
             maleCatInfo[id].defPerLv = dadInfo.defPerLv + uint16(getRandom(boost));
             maleCatInfo[id].hpPerLv = dadInfo.hpPerLv + uint16(getRandom(boost));
         } else {
+<<<<<<< HEAD
             cats[id].levelCap = mom.level + uint8(getRandom(boost / 2));
+=======
+            cats[id].levelCap = mom.level + uint16(getRandom(boost));
+>>>>>>> add battle functions
             if (cats[id].levelCap > 40) cats[id].levelCap = 40;
         }
 
