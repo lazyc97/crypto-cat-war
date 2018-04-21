@@ -1,2 +1,7 @@
 _DS_Store
 web/**/contracts/
+
+node_modules/
+dist/
+.cache/
+yarn-error.log

@@ -1,0 +1,34 @@
+{
+  "name": "crypto-cat-war",
+  "version": "1.0.0",
+  "repository": "https://github.com/lazyc97/crypto-cat-war",
+  "author": "Duc Hoang Nguyen",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "ethers": "^3.0.15",
+    "froala-design-blocks": "^1.0.2",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-router-dom": "^4.2.2"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "parcel-bundler": "^1.7.1"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      [
+        "transform-react-jsx"
+      ]
+    ]
+  }
+}
