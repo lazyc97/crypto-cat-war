@@ -41,7 +41,23 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    // ___________________MYCODE_____________________________
 
+    // Adopt
+    $("#sell_label").find("button").click(function(){
+        var s = $(this).html()
+        if (s=="Adopt") {
+            $(this).html("Adopted");
+            $(this).attr({
+                "disabled" : true,
+            });
+            $(this).css({
+                "background-color" : "gray",
+            })
+        } 
+    });
+
+    // _____________________ENDCODE__________________________
     /*---------------------------------------------*
      * STICKY scroll
      ---------------------------------------------*/
