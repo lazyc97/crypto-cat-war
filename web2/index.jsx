@@ -1,5 +1,8 @@
 import 'babel-polyfill';
 
+window.$ = require('jquery');
+require('bootstrap');
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -18,6 +21,8 @@ import Home from './home';
 import Profile from './profile';
 import Marketplace from './marketplace';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'font-awesome/css/font-awesome.min.css';
 import 'froala-design-blocks/dist/css/froala_blocks.css';
 
 class App extends React.Component {
