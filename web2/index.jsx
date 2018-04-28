@@ -7,6 +7,7 @@ import {
 	Route,
 	Switch
 } from 'react-router-dom';
+import Ethers from 'ethers';
 
 import { DEFAULT_ETHERS_PROVIDER } from './assets';
 import { setupContract } from './utils';
@@ -15,6 +16,7 @@ import NavBar from './nav-bar';
 import Footer from './footer';
 import Home from './home';
 import Profile from './profile';
+import Marketplace from './marketplace';
 
 import 'froala-design-blocks/dist/css/froala_blocks.css';
 
@@ -22,9 +24,9 @@ class App extends React.Component {
 	constructor(props) {
 		super(props);
 
-		const wallet = JSON.parse(localStorage.getItem('wallet'));
-		if (wallet) {
-			setupContract(wallet);
+		const key = localStorage.getItem('privateKey');
+		if (key) {
+			setupContract(new Ethers.Wallet(key));
 		}
 	}
 
@@ -36,6 +38,7 @@ class App extends React.Component {
 					<Route exact path="/" component={Home} />
 					<Route exact path="/home" component={Home} />
 					<Route exact path="/profile" component={Profile} />
+					<Route exact path="/marketplace" component={Marketplace} />
 				</Switch>
 				<Footer />
 			</React.Fragment>

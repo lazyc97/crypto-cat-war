@@ -9,5 +9,5 @@ export const setupContract = (wallet) => {
   const abi = CONTRACT_JSON['abi'];
   window.MainContract = new Ethers.Contract(address, abi, wallet);
   console.log(MainContract);
-  localStorage.setItem('wallet', JSON.stringify(wallet));
+  localStorage.setItem('privateKey', wallet.privateKey);
 }

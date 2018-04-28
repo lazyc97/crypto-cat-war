@@ -69,6 +69,11 @@ contract CryptoCat is Player {
             getFreeCat(isMale, element);
     }
 
+    function buyInitCat(bool isMale, uint8 element) external payable {
+        require(msg.value >= 0.1 ether);
+        createNewCat(msg.sender, isMale, element);
+    }
+
     function feedCat(uint catId) external payable {
         addExp(catId, uint64(msg.value / expPrice));
     }
