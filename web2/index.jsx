@@ -19,7 +19,9 @@ import Profile from './profile';
 import 'froala-design-blocks/dist/css/froala_blocks.css';
 
 class App extends React.Component {
-	componentDidMount() {
+	constructor(props) {
+		super(props);
+
 		const wallet = JSON.parse(localStorage.getItem('wallet'));
 		if (wallet) {
 			setupContract(wallet);

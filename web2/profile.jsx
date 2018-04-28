@@ -1,19 +1,52 @@
 import React from 'react';
 import Ethers from 'ethers';
 
-import { images } from './assets';
+import { IMAGES, CAT_ELEMENTS } from './assets';
 import { setupContract } from './utils';
 
 class CatInfoCard extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const getCatIcon = () => {
+      const grade = Math.floor((this.props.info.level - 1) / 10);
+      if (!this.props.info.isMale) return IMAGES.femaleCatIcons[grade];
+      switch (this.props.info.element) {
+        case 0: return IMAGES.fireCatIcons[grade];
+        case 1: return IMAGES.waterCatIcons[grade];
+        case 2: return IMAGES.windCatIcons[grade];
+        default: return '';
+      }
+    }
+    this.catIcon = getCatIcon();
+  }
+
   render() {
+    const info = this.props.info;
+
     return (
       <div className="col-sm-3 text-left">
         <div className="fdb-box">
-          <img alt="image" className="img-fluid" src={images.femaleCatIcons[0]}></img>
+          <img alt="image" className="img-fluid" src={this.catIcon}></img>
 
           <div className="content">
-            <h3><strong>ID: 0</strong></h3>
-            <p>Level: 1 / 10</p>
+            <h3><strong>ID: {info.id.toString()}</strong></h3>
+            <hr/>
+            <p>Level: <strong>{info.level}</strong> / <strong>{info.levelCap}</strong></p>
+            {
+              info.isMale ? (
+                <React.Fragment>
+                  <p>Element: <strong>{CAT_ELEMENTS[info.element]}</strong></p>
+                  <p>Atk: <strong>{info.baseAtk + info.atkPerLv * (info.level - 1)}</strong> - Lv Up: <strong>+{info.atkPerLv}</strong></p>
+                  <p>Def: <strong>{info.baseDef + info.defPerLv * (info.level - 1)}</strong> - Lv Up: <strong>+{info.defPerLv}</strong></p>
+                  <p>Hp: <strong>{info.baseHp + info.hpPerLv * (info.level - 1)}</strong> - Lv Up: <strong>+{info.hpPerLv}</strong></p>
+                </React.Fragment>
+              ) : (
+                <React.Fragment>
+                  <p>Breed Fee: <strong>{Ethers.utils.formatEther(info.breedFee)} ETH</strong></p>
+                </React.Fragment>
+              )
+            }
           </div>
         </div>
       </div>
@@ -31,11 +64,6 @@ class Profile extends React.Component {
       elements: []
     }
 
-    for (let i = 0; i < 5; ++i) {
-      if (i % 4 == 0) this.state.elements.push(<div className="row-50" key={`space${i}`} />);
-      this.state.elements.push(<CatInfoCard key={`info${i}`} />);
-    }
-
     this.privateKeyBox = React.createRef();
     this.login = () => {
       let key = this.privateKeyBox.current.value;
@@ -44,6 +72,7 @@ class Profile extends React.Component {
       const wallet = new Ethers.Wallet(key);
       setupContract(wallet);
       this.setAccount(wallet.address);
+      this.getOwnedCats();
     };
     this.generate = () => {
       alert('This game is for people with ETH not newbies, give it up ;)');
@@ -60,11 +89,43 @@ class Profile extends React.Component {
         console.error(err);
       }
     };
+
+    this.getOwnedCats = async () => {
+      try {
+        const ownedIds = await MainContract.getOwnedCats();
+        const promises = [];
+        for (let id of ownedIds) {
+          promises.push(MainContract.cats(id));
+        }
+
+        const catInfos = await Promise.all(promises);
+        promises.length = 0;
+        for (let info of catInfos) {
+          const f = info.isMale ? MainContract.maleCatInfo : MainContract.femaleCatInfo;
+          promises.push(f(info.id));
+        }
+
+        const specificInfos = await Promise.all(promises);
+        for (let i = 0; i < catInfos.length; ++i) {
+          catInfos[i] = Object.assign(catInfos[i], specificInfos[i]);
+        }
+
+        const elements = [];
+        for (let i = 0; i < catInfos.length; ++i) {
+          if (i % 4 == 0) elements.push(<div className="row-50" key={`space${i}`} />);
+          elements.push(<CatInfoCard key={`info${i}`} info={catInfos[i]} />);
+        }
+        this.setState({ elements: elements });
+      } catch (err) {
+        console.error(err);
+      }
+    };
   }
 
   componentDidMount() {
     if (window.MainContract) {
       this.setAccount(window.MainContract.signer.address);
+      this.getOwnedCats();
     }
   }
 

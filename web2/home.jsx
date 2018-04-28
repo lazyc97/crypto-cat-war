@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { images } from './assets';
+import { IMAGES } from './assets';
 
 export default (props) => (
   <React.Fragment>
@@ -9,7 +9,7 @@ export default (props) => (
       <div className="container">
         <div className="row align-items-center">
           <div className="col-12 col-md-6 mb-4 mb-md-0">
-            <img alt="image" className="img-fluid" src={images.welcomeImage} />
+            <img alt="image" className="img-fluid" src={IMAGES.welcomeImage} />
           </div>
           <div className="col-12 col-md-6 col-lg-5 ml-md-auto text-left">
             <h1>Crypto Cat War</h1>
@@ -30,7 +30,7 @@ export default (props) => (
           <div className="col-12 col-md-4">
             <div className="row">
               <div className="col-3">
-                <img alt="image" className="img-fluid" src={images.auctionIcon} />
+                <img alt="image" className="img-fluid" src={IMAGES.auctionIcon} />
               </div>
               <div className="col-9">
                 <h3><strong>Auction</strong></h3>
@@ -42,7 +42,7 @@ export default (props) => (
           <div className="col-12 col-md-4 pt-3 pt-sm-4 pt-md-0">
             <div className="row">
               <div className="col-3">
-                <img alt="image" className="img-fluid" src={images.loveIcon} />
+                <img alt="image" className="img-fluid" src={IMAGES.loveIcon} />
               </div>
               <div className="col-9">
                 <h3><strong>Breed</strong></h3>
@@ -54,7 +54,7 @@ export default (props) => (
           <div className="col-12 col-md-4 pt-3 pt-sm-4 pt-md-0">
             <div className="row">
               <div className="col-3">
-                <img alt="image" className="img-fluid" src={images.battleIcon} />
+                <img alt="image" className="img-fluid" src={IMAGES.battleIcon} />
               </div>
               <div className="col-9">
                 <h3><strong>Battle</strong></h3>
@@ -68,7 +68,7 @@ export default (props) => (
           <div className="col-12 col-md-4">
             <div className="row">
               <div className="col-3">
-                <img alt="image" className="img-fluid" src={images.shoppingIcon} />
+                <img alt="image" className="img-fluid" src={IMAGES.shoppingIcon} />
               </div>
               <div className="col-9">
                 <h3><strong>Buy EXP</strong></h3>
@@ -80,7 +80,7 @@ export default (props) => (
           <div className="col-12 col-md-4 pt-3 pt-sm-4 pt-md-0">
             <div className="row">
               <div className="col-3">
-                <img alt="image" className="img-fluid" src={images.coinsIcon} />
+                <img alt="image" className="img-fluid" src={IMAGES.coinsIcon} />
               </div>
               <div className="col-9">
                 <h3><strong>Marketplace</strong></h3>
@@ -92,7 +92,7 @@ export default (props) => (
           <div className="col-12 col-md-4 pt-3 pt-sm-4 pt-md-0">
             <div className="row">
               <div className="col-3">
-                <img alt="image" className="img-fluid" src={images.ethereumIcon} />
+                <img alt="image" className="img-fluid" src={IMAGES.ethereumIcon} />
               </div>
               <div className="col-9">
                 <h3><strong>Ethereum Platform</strong></h3>

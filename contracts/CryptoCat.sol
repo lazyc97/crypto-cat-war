@@ -9,7 +9,8 @@ contract CryptoCat is Player {
 
     function createNewCat(
         address owner,
-        bool isMale
+        bool isMale,
+        uint8 element
     ) private returns (uint)
     {
         uint id = cats.length;
@@ -28,7 +29,7 @@ contract CryptoCat is Player {
         cats.push(cat);
         if (cat.isMale) {
             MaleCat storage maleInfo = maleCatInfo[id];
-            maleInfo.element = 0;
+            maleInfo.element = element;
             maleInfo.atkPerLv = 1;
             maleInfo.defPerLv = 1;
             maleInfo.hpPerLv = 1;
@@ -59,13 +60,13 @@ contract CryptoCat is Player {
         }
     }
 
-    function getFreeCat(bool isMale) private adminOnly {
-        createNewCat(msg.sender, isMale);
+    function getFreeCat(bool isMale, uint8 element) private adminOnly {
+        createNewCat(msg.sender, isMale, element);
     }
 
-    function getFreeCats(uint num, bool isMale) external adminOnly {
+    function getFreeCats(uint num, bool isMale, uint8 element) external adminOnly {
         for (uint i = 0; i < num; ++i)
-            getFreeCat(isMale);
+            getFreeCat(isMale, element);
     }
 
     function feedCat(uint catId) external payable {
@@ -75,8 +76,8 @@ contract CryptoCat is Player {
     function breed(Cat dad, Cat mom) internal returns (uint) {
         require(dad.isMale && !mom.isMale);
 
-        uint id = createNewCat(msg.sender, getRandom(2) == 1);
         MaleCat storage dadInfo = maleCatInfo[dad.id];
+        uint id = createNewCat(msg.sender, getRandom(2) == 1, dadInfo.element);
 
         uint boost = dad.level - mom.level;
         if (dad.level < mom.level) boost = mom.level - dad.level;
@@ -84,7 +85,6 @@ contract CryptoCat is Player {
 
         if (cats[id].isMale) {
             cats[id].levelCap = mom.level;
-            maleCatInfo[id].element = dadInfo.element;
             maleCatInfo[id].baseAtk = dadInfo.baseAtk + uint16(getRandom(boost * 5));
             maleCatInfo[id].baseDef = dadInfo.baseDef + uint16(getRandom(boost * 5));
             maleCatInfo[id].baseHp = dadInfo.baseHp + uint16(getRandom(boost * 5));
