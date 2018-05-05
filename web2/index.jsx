@@ -20,6 +20,7 @@ import Footer from './footer';
 import Home from './home';
 import Profile from './profile';
 import Marketplace from './marketplace';
+import Arena from './arena';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -44,6 +45,7 @@ class App extends React.Component {
 					<Route exact path="/home" component={Home} />
 					<Route exact path="/profile" component={Profile} />
 					<Route exact path="/marketplace" component={Marketplace} />
+					<Route exact path="/arena" component={Arena} />
 				</Switch>
 				<Footer />
 			</React.Fragment>

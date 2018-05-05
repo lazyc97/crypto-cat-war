@@ -2,7 +2,7 @@ import React from 'react';
 import Ethers from 'ethers';
 
 import { IMAGES, CAT_ELEMENTS } from './assets';
-import { setupContract } from './utils';
+import { setupContract, setCatPropsByLevel } from './utils';
 
 class CatInfoCard extends React.Component {
   constructor(props) {
@@ -22,7 +22,7 @@ class CatInfoCard extends React.Component {
   }
 
   render() {
-    const info = this.props.info;
+    const info = setCatPropsByLevel(this.props.info);
 
     return (
       <div className="col-sm-3 text-left">
@@ -37,9 +37,9 @@ class CatInfoCard extends React.Component {
               info.isMale ? (
                 <React.Fragment>
                   <p>Element: <strong>{CAT_ELEMENTS[info.element]}</strong></p>
-                  <p>Atk: <strong>{info.baseAtk + info.atkPerLv * (info.level - 1)}</strong> - Lv Up: <strong>+{info.atkPerLv}</strong></p>
-                  <p>Def: <strong>{info.baseDef + info.defPerLv * (info.level - 1)}</strong> - Lv Up: <strong>+{info.defPerLv}</strong></p>
-                  <p>Hp: <strong>{info.baseHp + info.hpPerLv * (info.level - 1)}</strong> - Lv Up: <strong>+{info.hpPerLv}</strong></p>
+                  <p>Atk: <strong>{info.atk}</strong> - Lv Up: <strong>+{info.atkPerLv}</strong></p>
+                  <p>Def: <strong>{info.def}</strong> - Lv Up: <strong>+{info.defPerLv}</strong></p>
+                  <p>Hp: <strong>{info.hp}</strong> - Lv Up: <strong>+{info.hpPerLv}</strong></p>
                 </React.Fragment>
               ) : (
                 <React.Fragment>

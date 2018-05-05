@@ -19,27 +19,23 @@ contract CryptoCatWar is Marketplace {
         if (elementCountered(info1, info2)) atkMul = 12;
         if (elementCountered(info2, info1)) atkMul = 8;
 
-        uint hp = info1.baseHp + (cats[id1].level - 1) * info1.hpPerLv * 10;
-        uint def = info1.baseDef + (cats[id1].level - 1) * info1.defPerLv * 10;
-        uint dmg = info2.baseAtk + (cats[id2].level - 1) * info2.atkPerLv * atkMul;
+        uint hp = (info1.baseHp + (cats[id1].level - 1)) * info1.hpPerLv * 10;
+        uint def = (info1.baseDef + (cats[id1].level - 1)) * info1.defPerLv * 10;
+        uint dmg = (info2.baseAtk + (cats[id2].level - 1)) * info2.atkPerLv * atkMul;
 
         if (def >= dmg) return uint(-1);
         return (hp + dmg - def - 1) / (dmg - def);
     }
 
-    function attackCat(uint ownCatId, uint atkCatId) public returns (bool) {
+    function attackCat(uint ownCatId, uint atkCatId) public {
         require(cats[ownCatId].owner == msg.sender);
         require(cats[atkCatId].owner != msg.sender);
 
         uint ownTime = timeTillDead(ownCatId, atkCatId);
         uint atkTime = timeTillDead(atkCatId, ownCatId);
-        require(atkTime != uint(-1));
 
-        if (ownTime >= atkTime) {
+        if (atkTime != uint(-1) && ownTime >= atkTime) {
             addExp(ownCatId, uint64(1) << (cats[atkCatId].level - 1));
-            return true;
         }
-
-        return false;
     }
 }
