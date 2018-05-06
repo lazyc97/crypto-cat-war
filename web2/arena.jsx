@@ -2,7 +2,7 @@ import React from 'react';
 import Ethers from 'ethers';
 
 import { IMAGES, CAT_ELEMENTS } from './assets';
-import { setCatPropsByLevel } from './utils';
+import { getFullCatData } from './utils';
 
 class Arena extends React.Component {
   constructor(props) {
@@ -22,11 +22,11 @@ class Arena extends React.Component {
     this.getInfo1 = async () => {
       try {
         const id = Ethers.utils.bigNumberify(this.ownCatInputBox.current.value);
-        const info = await MainContract.cats(id);
+        const info = await getFullCatData(id);
         if (!info.isMale) throw 'Cat is not male';
         if (info.owner !== MainContract.signer.address) throw 'This should be your cat';
         this.setState({
-          info1: setCatPropsByLevel(Object.assign(info, await MainContract.maleCatInfo(id)))
+          info1: info,
         });
       } catch (err) {
         console.error(err);
@@ -35,11 +35,11 @@ class Arena extends React.Component {
     this.getInfo2 = async () => {
       try {
         const id = Ethers.utils.bigNumberify(this.atkCatInputBox.current.value);
-        const info = await MainContract.cats(id);
+        const info = await getFullCatData(id);
         if (!info.isMale) throw 'Cat is not male';
         if (info.owner === MainContract.signer.address) throw 'This should NOT be your cat';
         this.setState({
-          info2: setCatPropsByLevel(Object.assign(info, await MainContract.maleCatInfo(id)))
+          info2: info,
         });
       } catch (err) {
         console.error(err);

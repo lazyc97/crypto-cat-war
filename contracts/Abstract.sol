@@ -47,7 +47,6 @@ contract Abstract is Admin {
     Cat[] public cats;
 
     mapping(address => uint[]) public ownedCats;
-    mapping(uint => mapping(address => uint)) public auctionDeposits;
 
     uint randomSeed;
 

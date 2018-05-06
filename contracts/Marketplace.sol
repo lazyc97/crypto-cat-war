@@ -3,8 +3,6 @@ pragma solidity ^0.4.19;
 import "./CryptoCat.sol";
 
 contract Marketplace is CryptoCat {
-    event AuctionEnd(uint indexed catId);
-
     function setBreedFee(uint catId, uint fee) public {
         require(cats[catId].owner == msg.sender);
         require(cats[catId].isMale == false);
@@ -38,24 +36,16 @@ contract Marketplace is CryptoCat {
         cat.onAuction = false;
         if (cat.highestBidder != 0) {
             msg.sender.transfer(cat.highestBid);
-            auctionDeposits[catId][cat.highestBidder] = 0;
             transferCat(cat, cat.highestBidder);
         }
-
-        AuctionEnd(catId);
     }
 
     function raiseBid(uint catId) external payable {
         Cat storage cat = cats[catId];
-        require(cat.onAuction && cat.highestBid < auctionDeposits[catId][msg.sender] + msg.value);
+        require(cat.owner != msg.sender && cat.onAuction && cat.highestBid < msg.value);
 
-        auctionDeposits[catId][msg.sender] += msg.value;
-        cat.highestBid = auctionDeposits[catId][msg.sender];
+        cat.highestBidder.transfer(cat.highestBid);
+        cat.highestBid = msg.value;
         cat.highestBidder = msg.sender;
-    }
-
-    function drawEther(uint catId) external {
-        msg.sender.transfer(auctionDeposits[catId][msg.sender]);
-        auctionDeposits[catId][msg.sender] = 0;
     }
 }

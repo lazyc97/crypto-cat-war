@@ -1,24 +1,12 @@
 import React from 'react';
 import Ethers from 'ethers';
 
-import { IMAGES, CAT_ELEMENTS } from './assets';
-import { setupContract, setCatPropsByLevel } from './utils';
+import { CAT_ELEMENTS } from './assets';
+import { setupContract, getFullCatData, getCatIcon } from './utils';
 
 class CatInfoCard extends React.Component {
   constructor(props) {
     super(props);
-
-    const getCatIcon = () => {
-      const grade = Math.floor((this.props.info.level - 1) / 10);
-      if (!this.props.info.isMale) return IMAGES.femaleCatIcons[grade];
-      switch (this.props.info.element) {
-        case 0: return IMAGES.fireCatIcons[grade];
-        case 1: return IMAGES.waterCatIcons[grade];
-        case 2: return IMAGES.windCatIcons[grade];
-        default: return '';
-      }
-    }
-    this.catIcon = getCatIcon();
 
     this.feedCat = async () => {
       try {
@@ -34,10 +22,30 @@ class CatInfoCard extends React.Component {
 
     this.setBreedFee = async () => {
       try {
-        const scale = Ethers.utils.bigNumberify('1' + '0'.repeat(15));
-        const num = Ethers.utils.bigNumberify(prompt('Cost for breeding? (finney)', this.props.info.breedFee.div(scale).toString()));
-        await MainContract.setBreedFee(this.props.info.id, num.mul(scale));
+        const defaultNum = Ethers.utils.formatUnits(this.props.info.breedFee, 'finny');
+        const num = prompt('Cost for breeding? (finney)', defaultNum);
+        await MainContract.setBreedFee(this.props.info.id, Ethers.utils.parseUnits(num, 'finny'));
         this.props.parent.reloadInfo(this);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    this.startAuction = async () => {
+      try {
+        const num = prompt('Starting price? (finney)', '1');
+        await MainContract.startAuction(this.props.info.id, Ethers.utils.parseUnits(num, 'finny'));
+        this.props.parent.reloadInfo(this);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    this.endAuction = async () => {
+      try {
+        await MainContract.endAuction(this.props.info.id);
+        this.props.parent.setAccount(window.MainContract.signer.address);
+        this.props.parent.getOwnedCats();
       } catch (err) {
         console.error(err);
       }
@@ -45,12 +53,12 @@ class CatInfoCard extends React.Component {
   }
 
   render() {
-    const info = setCatPropsByLevel(this.props.info);
+    const { info } = this.props;
 
     return (
       <div className="col-sm-3 text-left">
         <div className="fdb-box">
-          <img alt="image" className="img-fluid" src={this.catIcon}></img>
+          <img alt="image" className="img-fluid" src={getCatIcon(info)}></img>
 
           <div className="content">
             <h3><strong>ID: {info.id.toString()}</strong></h3>
@@ -73,12 +81,24 @@ class CatInfoCard extends React.Component {
                 <p>Breed Fee: <strong>{Ethers.utils.formatEther(info.breedFee)} ETH</strong></p>
               </React.Fragment>
             )}
+
+            {this.props.info.onAuction ? (
+              <p>Highest Bid: <strong>{Ethers.utils.formatEther(info.highestBid)} ETH</strong></p>
+            ) : null}
+
             <button className="btn" type="button" onClick={this.feedCat}>Feed</button>
+
             {this.props.info.isMale ? '' : (
               <React.Fragment>
-                <p> </p>
+                <p/>
                 <button className="btn" type="button" onClick={this.setBreedFee}>Set Fee</button>
               </React.Fragment>
+            )}
+            <p/>
+            {this.props.info.onAuction ? (
+              <button className="btn" type="button" onClick={this.endAuction}>End Auction</button>
+            ) : (
+              <button className="btn" type="button" onClick={this.startAuction}>Start Auction</button>
             )}
           </div>
         </div>
@@ -126,22 +146,8 @@ class Profile extends React.Component {
     this.getOwnedCats = async () => {
       try {
         const ownedIds = await MainContract.getOwnedCats();
-        const promises = [];
-        for (let id of ownedIds) {
-          promises.push(MainContract.cats(id));
-        }
-
+        const promises = ownedIds.map((id) => getFullCatData(id));
         const catInfos = await Promise.all(promises);
-        promises.length = 0;
-        for (let info of catInfos) {
-          const f = info.isMale ? MainContract.maleCatInfo : MainContract.femaleCatInfo;
-          promises.push(f(info.id));
-        }
-
-        const specificInfos = await Promise.all(promises);
-        for (let i = 0; i < catInfos.length; ++i) {
-          catInfos[i] = Object.assign(catInfos[i], specificInfos[i]);
-        }
 
         const elements = [];
         for (let i = 0; i < catInfos.length; ++i) {
@@ -155,11 +161,7 @@ class Profile extends React.Component {
     };
 
     this.reloadInfo = async (comp) => {
-      const oldInfo = comp.props.info;
-      const f = oldInfo.isMale ? MainContract.maleCatInfo : MainContract.femaleCatInfo;
-      const infos = await Promise.all([MainContract.cats(oldInfo.id), f(oldInfo.id)]);
-      const info = Object.assign(...infos);
-
+      const info = await getFullCatData(comp.props.info.id);
       const elements = this.state.elements;
       const idx = elements.findIndex((val) => val.props.idx === comp.props.idx);
       elements[idx] = <CatInfoCard key={`info${comp.props.idx}`} idx={comp.props.idx} info={info} parent={this} />;
