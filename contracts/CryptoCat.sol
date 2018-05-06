@@ -42,7 +42,7 @@ contract CryptoCat is Player {
             femaleInfo.lastBreed = block.timestamp;
         }
 
-        receiveCat(cat, owner);
+        receiveCat(cats[cat.id], owner);
         return id;
     }
 

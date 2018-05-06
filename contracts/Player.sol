@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 import "./Abstract.sol";
 
 contract Player is Abstract {
-    function transferCat(Cat cat, address newOwner) internal {
+    function transferCat(Cat storage cat, address newOwner) internal {
         require(cat.owner == msg.sender);
 
         // remove from profile
@@ -25,7 +25,7 @@ contract Player is Abstract {
         receiveCat(cat, newOwner);
     }
 
-    function receiveCat(Cat cat, address owner) internal {
+    function receiveCat(Cat storage cat, address owner) internal {
         cat.owner = owner;
         ownedCats[owner].push(cat.id);
     }
