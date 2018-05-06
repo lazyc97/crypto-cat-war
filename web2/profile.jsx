@@ -19,6 +19,29 @@ class CatInfoCard extends React.Component {
       }
     }
     this.catIcon = getCatIcon();
+
+    this.feedCat = async () => {
+      try {
+        const num = Ethers.utils.bigNumberify(prompt('How much EXP do you want to buy? (1000 wei = 1 EXP)', '0'));
+        await MainContract.feedCat(this.props.info.id, {
+          value: num.mul(1000),
+        });
+        this.props.parent.reloadInfo(this);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    this.setBreedFee = async () => {
+      try {
+        const scale = Ethers.utils.bigNumberify('1' + '0'.repeat(15));
+        const num = Ethers.utils.bigNumberify(prompt('Cost for breeding? (finney)', this.props.info.breedFee.div(scale).toString()));
+        await MainContract.setBreedFee(this.props.info.id, num.mul(scale));
+        this.props.parent.reloadInfo(this);
+      } catch (err) {
+        console.error(err);
+      }
+    };
   }
 
   render() {
@@ -33,20 +56,30 @@ class CatInfoCard extends React.Component {
             <h3><strong>ID: {info.id.toString()}</strong></h3>
             <hr/>
             <p>Level: <strong>{info.level}</strong> / <strong>{info.levelCap}</strong></p>
-            {
-              info.isMale ? (
-                <React.Fragment>
-                  <p>Element: <strong>{CAT_ELEMENTS[info.element]}</strong></p>
-                  <p>Atk: <strong>{info.atk}</strong> - Lv Up: <strong>+{info.atkPerLv}</strong></p>
-                  <p>Def: <strong>{info.def}</strong> - Lv Up: <strong>+{info.defPerLv}</strong></p>
-                  <p>Hp: <strong>{info.hp}</strong> - Lv Up: <strong>+{info.hpPerLv}</strong></p>
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  <p>Breed Fee: <strong>{Ethers.utils.formatEther(info.breedFee)} ETH</strong></p>
-                </React.Fragment>
-              )
-            }
+            {info.level < info.levelCap ? (
+              <p>Exp: <strong>{info.exp.toString()}</strong> / <strong>{1 << info.level}</strong></p>
+            ): (
+              <p>Exp: <strong>Maxed</strong></p>
+            )}
+            {info.isMale ? (
+              <React.Fragment>
+                <p>Element: <strong>{CAT_ELEMENTS[info.element]}</strong></p>
+                <p>Atk: <strong>{info.atk}</strong> - Lv Up: <strong>+{info.atkPerLv}</strong></p>
+                <p>Def: <strong>{info.def}</strong> - Lv Up: <strong>+{info.defPerLv}</strong></p>
+                <p>Hp: <strong>{info.hp}</strong> - Lv Up: <strong>+{info.hpPerLv}</strong></p>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <p>Breed Fee: <strong>{Ethers.utils.formatEther(info.breedFee)} ETH</strong></p>
+              </React.Fragment>
+            )}
+            <button className="btn" type="button" onClick={this.feedCat}>Feed</button>
+            {this.props.info.isMale ? '' : (
+              <React.Fragment>
+                <p> </p>
+                <button className="btn" type="button" onClick={this.setBreedFee}>Set Fee</button>
+              </React.Fragment>
+            )}
           </div>
         </div>
       </div>
@@ -113,12 +146,24 @@ class Profile extends React.Component {
         const elements = [];
         for (let i = 0; i < catInfos.length; ++i) {
           if (i % 4 == 0) elements.push(<div className="row-50" key={`space${i}`} />);
-          elements.push(<CatInfoCard key={`info${i}`} info={catInfos[i]} />);
+          elements.push(<CatInfoCard key={`info${i}`} idx={i} info={catInfos[i]} parent={this} />);
         }
         this.setState({ elements: elements });
       } catch (err) {
         console.error(err);
       }
+    };
+
+    this.reloadInfo = async (comp) => {
+      const oldInfo = comp.props.info;
+      const f = oldInfo.isMale ? MainContract.maleCatInfo : MainContract.femaleCatInfo;
+      const infos = await Promise.all([MainContract.cats(oldInfo.id), f(oldInfo.id)]);
+      const info = Object.assign(...infos);
+
+      const elements = this.state.elements;
+      const idx = elements.findIndex((val) => val.props.idx === comp.props.idx);
+      elements[idx] = <CatInfoCard key={`info${comp.props.idx}`} idx={comp.props.idx} info={info} parent={this} />;
+      this.setState({ elements: elements });
     };
   }
 
