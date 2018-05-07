@@ -47,6 +47,11 @@ export const showMessageDialog = (title, content) => {
     $('#message-modal-title').text(title);
     $('#message-modal-content').text(content);
     $('#message-modal-close').click(resolve);
+    $('#message-modal').keyup((event) => {
+      if (event.key == 'Enter') {
+        $('#message-modal-close').click();
+      }
+    });
     $('#message-modal').modal({
       backdrop: 'static',
     });
@@ -59,6 +64,11 @@ export const showConfirmDialog = (title, content) => {
     $('#confirm-modal-content').text(content);
     $('#confirm-modal-yes').click(() => resolve(true));
     $('#confirm-modal-no').click(() => resolve(false));
+    $('#confirm-modal').keyup((event) => {
+      if (event.key == 'Enter') {
+        $('#confirm-modal-yes').click();
+      }
+    });
     $('#confirm-modal').modal({
       backdrop: 'static',
     });
@@ -75,6 +85,14 @@ export const showTextInputDialog = (title, label, defaultInput) => {
       resolve(text);
     });
     $('#text-input-modal-close').click(() => resolve(null));
+    $('#text-input-modal').keyup((event) => {
+      if (event.key == 'Enter') {
+        $('#text-input-modal-confirm').click();
+      }
+    });
+    $('#text-input-modal').on('shown.bs.modal', function() {
+      $('#text-input-modal-input').select();
+    });
     $('#text-input-modal').modal({
       backdrop: 'static',
     });
