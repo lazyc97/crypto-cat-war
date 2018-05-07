@@ -1,4 +1,5 @@
 import Ethers from 'ethers';
+import $ from 'jquery';
 
 import { CONTRACT_JSON, IMAGES } from './assets';
 
@@ -39,4 +40,43 @@ export const getCatIcon = (info) => {
     case 2: return IMAGES.windCatIcons[grade];
     default: return '';
   }
+}
+
+export const showMessageDialog = (title, content) => {
+  return new Promise((resolve, reject) => {
+    $('#message-modal-title').text(title);
+    $('#message-modal-content').text(content);
+    $('#message-modal-close').click(resolve);
+    $('#message-modal').modal({
+      backdrop: 'static',
+    });
+  });
+}
+
+export const showConfirmDialog = (title, content) => {
+  return new Promise((resolve, reject) => {
+    $('#confirm-modal-title').text(title);
+    $('#confirm-modal-content').text(content);
+    $('#confirm-modal-yes').click(() => resolve(true));
+    $('#confirm-modal-no').click(() => resolve(false));
+    $('#confirm-modal').modal({
+      backdrop: 'static',
+    });
+  });
+}
+
+export const showTextInputDialog = (title, label, defaultInput) => {
+  return new Promise((resolve, reject) => {
+    $('#text-input-modal-title').text(title);
+    $('#text-input-modal-label').text(label);
+    $('#text-input-modal-input').val(defaultInput);
+    $('#text-input-modal-confirm').click(() => {
+      const text = $('#text-input-modal-input').val();
+      resolve(text);
+    });
+    $('#text-input-modal-close').click(() => resolve(null));
+    $('#text-input-modal').modal({
+      backdrop: 'static',
+    });
+  });
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import Ethers from 'ethers';
 
 import { IMAGES, CAT_ELEMENTS } from './assets';
-import { getFullCatData } from './utils';
+import { getFullCatData, showMessageDialog } from './utils';
 
 class Arena extends React.Component {
   constructor(props) {
@@ -29,6 +29,7 @@ class Arena extends React.Component {
           info1: info,
         });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -42,6 +43,7 @@ class Arena extends React.Component {
           info2: info,
         });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -52,7 +54,7 @@ class Arena extends React.Component {
         try {
           await MainContract.attackCat(info1.id, info2.id);
           const newInfo = await MainContract.cats(info1.id);
-          alert('Battle finished!');
+          showMessageDialog('Battle finished!', 'Head back to profile to check cat\'s info or attack another cat.');
 
           this.setState({
             info1: setCatPropsByLevel(Object.assign(info1, newInfo)),
@@ -60,10 +62,11 @@ class Arena extends React.Component {
           });
           this.atkCatInputBox.current.value = '';
         } catch (err) {
+          showMessageDialog('Error', err);
           console.error(err);
         }
       } else {
-        alert('Please select cats first.');
+        showMessageDialog('Error', 'Please select cats first.');
       }
     };
 

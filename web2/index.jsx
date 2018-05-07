@@ -15,6 +15,7 @@ import Ethers from 'ethers';
 import { DEFAULT_ETHERS_PROVIDER } from './assets';
 import { setupContract } from './utils';
 
+import Modal from './modal';
 import NavBar from './nav-bar';
 import Footer from './footer';
 import Home from './home';
@@ -48,6 +49,8 @@ class App extends React.Component {
 					<Route exact path="/arena" component={Arena} />
 				</Switch>
 				<Footer />
+
+				<Modal />
 			</React.Fragment>
 		);
 	}

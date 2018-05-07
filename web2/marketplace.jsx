@@ -2,26 +2,28 @@ import React from 'react';
 import Ethers from 'ethers';
 
 import { IMAGES, CAT_ELEMENTS } from './assets';
-import { getFullCatData, getCatIcon } from './utils';
+import { getFullCatData, getCatIcon, showConfirmDialog, showMessageDialog } from './utils';
 
 class InitCatBlock extends React.Component {
   constructor(props) {
     super(props);
 
     this.buyInitCat = async (isMale, element) => {
-      if (!confirm('Pay 0.1 ETH to buy this cat?')) return;
-
       if (window.MainContract == null) {
-        alert('Please login first!');
+        showMessageDialog('Error', 'Please login first!');
         return;
       }
 
       try {
+        const confirmed = await showConfirmDialog('Buy Init Cat', 'Pay 0.1 ETH to buy this cat?');
+        if (!confirmed) return;
+
         await MainContract.buyInitCat(isMale, element, {
           value: Ethers.utils.bigNumberify('1' + ''.padEnd(17, '0')),
         });
-        alert('Bought it!');
+        showMessageDialog('Bought it!', 'Check profile page to see your new cat.');
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -94,6 +96,7 @@ class AuctionBlock extends React.Component {
         this.setState({ auctionInfo: info });
         this.bidInputBox.current.value = Ethers.utils.formatUnits(info.highestBid, 'finny');
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -106,6 +109,7 @@ class AuctionBlock extends React.Component {
         });
         this.setState({ auctionInfo: await getFullCatData(this.state.auctionInfo.id) });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -214,6 +218,7 @@ class BreedingBlock extends React.Component {
           info1: info,
         });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -226,6 +231,7 @@ class BreedingBlock extends React.Component {
           info2: info,
         });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -236,12 +242,13 @@ class BreedingBlock extends React.Component {
         try {
           const value = info2.owner === MainContract.signer.address ? 0 : info2.breedFee;
           await MainContract.payForBreed(info1.id, info2.id, { value: value });
-          alert('New Kitty has been born!');
+          showMessageDialog('Notice', 'New Kitty has been born!');
         } catch (err) {
+          showMessageDialog('Error', err);
           console.error(err);
         }
       } else {
-        alert('Please select cats first.');
+        showMessageDialog('Error', 'Please select cats first.');
       }
     };
 

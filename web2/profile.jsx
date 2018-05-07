@@ -2,7 +2,7 @@ import React from 'react';
 import Ethers from 'ethers';
 
 import { CAT_ELEMENTS } from './assets';
-import { setupContract, getFullCatData, getCatIcon } from './utils';
+import { setupContract, getFullCatData, getCatIcon, showMessageDialog, showConfirmDialog, showTextInputDialog } from './utils';
 
 class CatInfoCard extends React.Component {
   constructor(props) {
@@ -10,12 +10,16 @@ class CatInfoCard extends React.Component {
 
     this.feedCat = async () => {
       try {
-        const num = Ethers.utils.bigNumberify(prompt('How much EXP do you want to buy? (1000 wei = 1 EXP)', '0'));
+        const text = await showTextInputDialog('Buy EXP', 'How much EXP do you want to buy? (1000 wei = 1 EXP)', '0');
+        if (text === null) return;
+
+        const num = Ethers.utils.bigNumberify(text);
         await MainContract.feedCat(this.props.info.id, {
           value: num.mul(1000),
         });
         this.props.parent.reloadInfo(this);
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -23,30 +27,40 @@ class CatInfoCard extends React.Component {
     this.setBreedFee = async () => {
       try {
         const defaultNum = Ethers.utils.formatUnits(this.props.info.breedFee, 'finny');
-        const num = prompt('Cost for breeding? (finney)', defaultNum);
+        const num = await showTextInputDialog('Set Fee', 'Cost for breeding? (finney)', defaultNum);
+        if (num === null) return;
+
         await MainContract.setBreedFee(this.props.info.id, Ethers.utils.parseUnits(num, 'finny'));
         this.props.parent.reloadInfo(this);
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
 
     this.startAuction = async () => {
       try {
-        const num = prompt('Starting price? (finney)', '1');
+        const num = await showTextInputDialog('Start Auction', 'Starting price? (in finney)', '1');
+        if (num === null) return;
+
         await MainContract.startAuction(this.props.info.id, Ethers.utils.parseUnits(num, 'finny'));
         this.props.parent.reloadInfo(this);
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
 
     this.endAuction = async () => {
       try {
+        const confirmed = await showConfirmDialog('End Auction', 'End the auction and give the cat to highest bidder?');
+        if (!confirmed) return;
+
         await MainContract.endAuction(this.props.info.id);
         this.props.parent.setAccount(window.MainContract.signer.address);
         this.props.parent.getOwnedCats();
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -128,7 +142,7 @@ class Profile extends React.Component {
       this.getOwnedCats();
     };
     this.generate = () => {
-      alert('This game is for people with ETH not newbies, give it up ;)');
+      showMessageDialog('Generate Key', 'This game is for people with ETH not newbies, give it up ;)');
     };
 
     this.setAccount = async (address) => {
@@ -139,6 +153,7 @@ class Profile extends React.Component {
           ethBalance: Ethers.utils.formatEther(balance)
         });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
@@ -156,6 +171,7 @@ class Profile extends React.Component {
         }
         this.setState({ elements: elements });
       } catch (err) {
+        showMessageDialog('Error', err);
         console.error(err);
       }
     };
