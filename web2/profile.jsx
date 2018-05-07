@@ -100,20 +100,24 @@ class CatInfoCard extends React.Component {
               <p>Highest Bid: <strong>{Ethers.utils.formatEther(info.highestBid)} ETH</strong></p>
             ) : null}
 
-            <button className="btn" type="button" onClick={this.feedCat}>Feed</button>
+            <div className="dropup">
+              <button className="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions
+              </button>
+              <div className="dropdown-menu">
+                <button className="dropdown-item" onClick={this.feedCat}>Feed</button>
 
-            {this.props.info.isMale ? '' : (
-              <React.Fragment>
-                <p/>
-                <button className="btn" type="button" onClick={this.setBreedFee}>Set Fee</button>
-              </React.Fragment>
-            )}
-            <p/>
-            {this.props.info.onAuction ? (
-              <button className="btn" type="button" onClick={this.endAuction}>End Auction</button>
-            ) : (
-              <button className="btn" type="button" onClick={this.startAuction}>Start Auction</button>
-            )}
+                {this.props.info.isMale ? '' : (
+                  <button className="dropdown-item" onClick={this.setBreedFee}>Set Fee</button>
+                )}
+
+                {this.props.info.onAuction ? (
+                  <button className="dropdown-item" onClick={this.endAuction}>End Auction</button>
+                ) : (
+                  <button className="dropdown-item" onClick={this.startAuction}>Start Auction</button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -202,7 +206,7 @@ class Profile extends React.Component {
                 <h1>Authenticate</h1>
                 <div className="input-group mt-4 mb-4">
                   <input ref={this.privateKeyBox} type="text" className="form-control" placeholder="Enter your private key"></input>
-                  <span className="input-group-btn">
+                  <span className="btn-group">
                     <button className="btn" type="button" onClick={this.login}>Login</button>
                     <button className="btn" type="button" onClick={this.generate}>Generate</button>
                   </span>

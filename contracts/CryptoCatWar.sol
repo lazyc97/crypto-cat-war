@@ -204,7 +204,7 @@ contract CryptoCat is Player {
             maleCatInfo[id].defPerLv = dadInfo.defPerLv + uint16(getRandom(boost));
             maleCatInfo[id].hpPerLv = dadInfo.hpPerLv + uint16(getRandom(boost));
         } else {
-            cats[id].levelCap = mom.level + uint8(getRandom(boost));
+            cats[id].levelCap = mom.level + uint8(getRandom(boost * 3));
             if (cats[id].levelCap > 40) cats[id].levelCap = 40;
         }
 
