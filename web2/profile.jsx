@@ -68,6 +68,7 @@ class CatInfoCard extends React.Component {
 
   render() {
     const { info } = this.props;
+    const expCap = Ethers.utils.bigNumberify(2).pow(info.level);
 
     return (
       <div className="col-sm-3 text-left">
@@ -79,7 +80,7 @@ class CatInfoCard extends React.Component {
             <hr/>
             <p>Level: <strong>{info.level}</strong> / <strong>{info.levelCap}</strong></p>
             {info.level < info.levelCap ? (
-              <p>Exp: <strong>{info.exp.toString()}</strong> / <strong>{1 << info.level}</strong></p>
+              <p>Exp: <strong>{info.exp.toString()}</strong> / <strong>{expCap.toString()}</strong></p>
             ): (
               <p>Exp: <strong>Maxed</strong></p>
             )}
