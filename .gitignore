@@ -1,5 +1,6 @@
 _DS_Store
 web/**/contracts/
+web2/**/contracts/
 
 node_modules/
 dist/

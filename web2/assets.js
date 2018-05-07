@@ -36,7 +36,7 @@ export const IMAGES = {
 };
 
 export const DEFAULT_ETHERS_PROVIDER = new Ethers.providers.JsonRpcProvider('http://localhost:7545');
-export const CONTRACT_JSON = require('../web/assets/contracts/CryptoCatWar.json');
+export const CONTRACT_JSON = require('./assets/contracts/CryptoCatWar.json');
 
 export const CAT_ELEMENTS = [
   'Fire',
